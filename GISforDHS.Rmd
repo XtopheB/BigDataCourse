@@ -21,7 +21,7 @@ knitr::opts_chunk$set( message = FALSE, warning = FALSE, results =FALSE, echo = 
 * * *
 # 1. Introduction to integrating household survey and geospatial data
 
-We need a minimum of organisation in the data and code folders, as well as some R packages.
+Some packages are needed
 
 ```{r packages}
 # GIS packages
@@ -44,7 +44,7 @@ library(knitr)
 library(papeR)
 ```
 
-
+We need a minimum of organisation in the data and code folders, as well as some R packages.
 
 ```{r}
 # --- Change to YOUR project folder HERE  ---- #
