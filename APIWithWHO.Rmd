@@ -4,13 +4,13 @@ subtitle: "A step-by-step case study with Bangladesh data "
 author: "Christophe Bontemps & Eunkoo Lee (SIAP)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  pdf_document: default
   word_document: default
   html_document:
     code_folding: show
     highlight: tango
     number_sections: yes
     theme: lumen
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}

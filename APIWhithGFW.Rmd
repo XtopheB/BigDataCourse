@@ -1,9 +1,14 @@
 ---
 title: "Use Global Fishing Watch API to collect and use fishing data"
-author: "Christophe Bontemps, Ziyue Zhang"
+author: "Christophe Bontemps & Ziyue Zhang"
 date: "2023-05-15"
 output:
-  html_document: default
+  html_document:
+    code_folding: show
+    highlight: tango
+    number_sections: yes
+    theme: lumen
+  word_document: default
   pdf_document: default
 editor_options:
   markdown:
@@ -25,7 +30,7 @@ SIAP.color <- "#0385a8"
 
 ```
 
-## Initialization
+# Initialization
 
 In order to use the API provided by GFS, we should identify ourself by
 using the "key" when requesting any information. We should save this key
@@ -45,7 +50,7 @@ library(gfwr)
 key <- gfw_auth()    #Access the token and save as "key"
 ```
 
-## To search about vessels information using identifiers and dataset categories
+# To search about vessels information using identifiers and dataset categories
 
 Every vessel has a unique identifier. It can be MMSI, shipname, id, etc.
 We can use any of these identifier to find out a specific vessel and
@@ -116,7 +121,7 @@ entry, stop or gap, and exit within port. A port visit with a lower
 confidence may sometimes be a false port visit caused by noisy AIS
 transmission and requires a further inspection of the vessel tracks.
 
-Example:
+### Example:
 
 Suppose we only have MMSI of a vessel, and we would like to search about
 the events from this vessel. Here are the steps. Firstly, we can get the
@@ -164,7 +169,7 @@ get_event(event_type='encounter',
 )
 
 ```
-
+### Another example 
 Another example: let's combine the Vessels and Events APIs to get
 fishing events for a list of 10 USA-flagged trawlers. We firstly search
 about all these vessels which come from USA, and has geartype "trawlers"
@@ -207,7 +212,7 @@ get_event(event_type='fishing',
 )
 ```
 
-## Map API
+# Map API
 
 The `get_raster` function gets a raster and converts the response to a
 data frame. In order to use it, you should specify:

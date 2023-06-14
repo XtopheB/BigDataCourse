@@ -1,0 +1,185 @@
+---
+title: "Web Scraping with R and Selenium"
+author: "Christophe Bontemps & Ziyue Zhang (SIAP)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    code_folding: show
+    highlight: tango
+    number_sections: yes
+    theme: lumen
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ethic Issue on Web Scraping: Being polite and identify ourself
+Web scraping can have legal and ethical implications, so it's always crucial to respect the privacy and terms of use for websites that you are scraping. In many cases, websites' terms of use do not allow for web scraping, so it's always a good idea to verify that before proceeding.
+
+Now, if you want to identify yourself while scraping, you might want to do it through the User-Agent HTTP header, which can convey information about the client, like software, version, and system information, and can be used to identify the client making the HTTP requests.
+
+However, as of my knowledge cutoff in September 2021, Selenium doesn't natively support this feature for R's rsDriver directly. In Python Selenium WebDriver, this could be done via DesiredCapabilities or ChromeOptions, but these classes may not be available in RSelenium yet.
+
+If you still want to identify yourself when scraping with RSelenium, here's a workaround you might use. You can customize the User-Agent of Firefox by creating a new Firefox profile:
+
+Open Firefox.
+Type `about:profiles` in the URL bar.
+Click the Create a New Profile button.
+Follow the prompts to name the profile and choose the folder location.
+Once the profile is created, start Firefox with this profile.
+Type `about:config` in the URL bar and proceed with caution.
+Search for `general.useragent.override`.
+If it's there, modify it to string. E.g., For instance, you might use a User-Agent string like `MyScraperBot/1.0 (https://mysite.com; bot@mysite.com)`. If it's not, create a new string preference with the name general.useragent.override and value of your new User-Agent string. ¥
+Now, when you run RSelenium, use this profile, and you should be able to identify yourself. !Please note that this may cause certain problems by certain website!
+
+Here is an example. PLEASE DO NOT RUN IT as it is a example without modification. Rather, you should follow the below code to create a `firefox_profile`, and the modify the `driver` from line 56-59 by adding the `extraCapabilities = list(firefox_profile = firefox_profile)` inside.
+
+```{r eval=FALSE, include=FALSE}
+############################ EXAMPLE DO NOT RUN ############################ 
+
+firefox_profile <- getFirefoxProfile("/path/to/your/profile") # Put the path of your profile here
+
+driver <- rsDriver(
+  browser = "firefox", 
+  port = 1234L,        
+  verbose = FALSE, 
+  extraCapabilities = list(firefox_profile = firefox_profile)
+)
+
+############################ EXAMPLE DO NOT RUN ############################ 
+```
+
+
+
+# Introduction of Selenium
+
+```{r}
+library(RSelenium)
+library(rvest)
+
+# Start a Selenium firefox browser
+driver <-rsDriver(browser = "firefox", 
+                   port = 4449L,      #20017L, <- for Mac 
+                   verbose = FALSE,
+                   chromever = NULL)
+
+# extract the client for readability of the code to follow
+remote_driver <- driver[["client"]]
+
+# Set URL
+url <- "https://www.globalproductprices.com/"
+
+Sys.sleep(1)
+# Navigate to the webpage
+remote_driver$navigate(url)
+
+Sys.sleep(1)
+# Maximize window size
+remote_driver$maxWindowSize()
+
+Sys.sleep(1)
+# Navigate into different headers categories, such as "Countries"
+countries <- remote_driver$findElement(using = 'link text', 'Countries')
+countries$clickElement()
+
+Sys.sleep(1)
+# Go back to last Page
+remote_driver$goBack()
+
+
+Sys.sleep(1)
+# Navigate into different headers categories, such as "Product List"
+productlist <- remote_driver$findElement(using = 'link text', 'Product list')
+productlist$clickElement()
+
+
+Sys.sleep(1)
+# Navigate into a specific food, such as "Egg"
+egg <- remote_driver$findElement(using = 'link text', 'Eggs prices')
+egg$clickElement()
+
+
+#Save the table for egg prices
+egg_price <- remote_driver$getPageSource()[[1]] %>% 
+  read_html() %>%
+  html_table()
+
+
+Sys.sleep(1)
+# Go back to last Page
+remote_driver$goBack()
+
+
+Sys.sleep(1)
+# Navigate into a specific food, such as "Sugar"
+sugar <- remote_driver$findElement(using = 'link text', 'Sugar prices, 1 kg')
+sugar$clickElement()
+
+
+#Save the table for sugar price
+sugar_price <- remote_driver$getPageSource()[[1]] %>% 
+  read_html() %>%
+  html_table()
+```
+
+
+# Play a bit with the collected data
+
+```{r}
+library(countrycode)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+#The original egg_price is a tibble which has another tibble nested inside. The inside tibble is what we need. So we use [[1]] to take it out
+egg_price_df <- egg_price[[1]]    
+
+egg_price_df$continent <- countrycode(egg_price_df$Countries, 
+                                       origin = "country.name", 
+                                       destination = "continent")
+
+# Calculate the mean egg price per continent:
+result <- egg_price_df %>%
+  group_by(continent) %>%
+  summarise(avg_egg_price = mean(`Eggs prices`, na.rm = TRUE))
+
+
+
+egg_plot <- ggplot(result, aes(x = continent, y = avg_egg_price)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  xlab("Continent") +
+  ylab("Average Egg Price") +
+  ggtitle("Average Egg Price per Continent")
+ggplotly(egg_plot)
+
+```
+
+
+
+```{r}
+sugar_price_df <- sugar_price[[1]]
+
+sugar_price_df$continent <- countrycode(sugar_price_df$Countries, 
+                                       origin = "country.name", 
+                                       destination = "continent")
+
+# Calculate the mean egg price per continent:
+result <- sugar_price_df %>%
+  group_by(continent) %>%
+  summarise(avg_sugar_price = mean(`Sugar prices, 1 kg`, na.rm = TRUE))
+
+
+
+sugar_plot<- ggplot(result, aes(x = continent, y = avg_sugar_price)) +
+  geom_bar(stat = "identity", fill = "red") +
+  theme_minimal() +
+  xlab("Continent") +
+  ylab("Average Sugar Price") +
+  ggtitle("Average Sugar Price per Continent")
+ggplotly(sugar_plot)
+
+```
