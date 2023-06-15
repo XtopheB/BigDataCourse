@@ -1,0 +1,13 @@
+name: RegressionApp
+title: RegressionApp
+username:
+account: xtophedataviz
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9312628
+bundleId: 7348385
+url: https://xtophedataviz.shinyapps.io/RegressionApp/
+when: 1686814690.4852
+lastSyncTime: 1686814690.48521
+asMultiple: FALSE
+asStatic: FALSE
