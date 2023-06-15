@@ -3,13 +3,13 @@ title: "Web Scraping with R and Selenium"
 author: "Christophe Bontemps & Ziyue Zhang (SIAP)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  pdf_document: default
+  word_document: default
   html_document:
     code_folding: show
     highlight: tango
     number_sections: yes
     theme: lumen
-  word_document: default
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -60,9 +60,11 @@ driver <- rsDriver(
 library(RSelenium)
 library(rvest)
 
+
+# Important note: Change the port number for each session (blocked by previous launch )
 # Start a Selenium firefox browser
 driver <-rsDriver(browser = "firefox", 
-                   port = 4449L,      #20017L, <- for Mac 
+                   port = 4445L,      #20017L, <- for Mac 
                    verbose = FALSE,
                    chromever = NULL)
 
