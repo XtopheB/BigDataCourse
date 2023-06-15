@@ -13,7 +13,8 @@ SIAP.color <- "#0385a8"
 server <- function(input, output) {
   # Generate the data frame
   data <- reactive({
-    n <- 100
+    # set.seed(2512)  # let it be random
+    n <- 150
     x <- rnorm(n)
     y <- 0.7* x + 1 + rnorm(n)
     df <- data.frame(x, y)
@@ -24,9 +25,9 @@ server <- function(input, output) {
   # Create the scatter plot
   output$scatterplot <- renderPlot({
     # Generate the end points for line 
-    x1 = -2
+    x1 = -3
     y1 =  input$coef_a * x1 + input$coef_b
-    x2 = 2
+    x2 = 3
     y2=  input$coef_a * x2 + input$coef_b
     
     # generate the plot
@@ -40,7 +41,7 @@ server <- function(input, output) {
            title = paste("Scatter Plot with Regression Line: Y =  ",
                          input$coef_a," *X + ",input$coef_b)) +
       if (input$show_regression) {
-        geom_smooth(method = "lm", se = TRUE, color = "red", linetype = "dashed")
+        geom_smooth(method = "lm", se = TRUE, color = "red") 
       }
   })
 }

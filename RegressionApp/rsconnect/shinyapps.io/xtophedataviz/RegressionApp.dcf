@@ -5,9 +5,9 @@ account: xtophedataviz
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9312628
-bundleId: 7348385
+bundleId: 7348475
 url: https://xtophedataviz.shinyapps.io/RegressionApp/
-when: 1686814690.4852
-lastSyncTime: 1686814690.48521
+when: 1686816493.04139
+lastSyncTime: 1686816493.04141
 asMultiple: FALSE
 asStatic: FALSE
