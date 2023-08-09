@@ -16,7 +16,7 @@ server <- function(input, output) {
     # set.seed(2512)  # let it be random
     n <- 150
     x <- rnorm(n)
-    y <- 0.7* x + 1 + rnorm(n)
+    y <- 1 + 0.7* x + rnorm(n)
     df <- data.frame(x, y)
     
     df
@@ -26,9 +26,9 @@ server <- function(input, output) {
   output$scatterplot <- renderPlot({
     # Generate the end points for line 
     x1 = -3
-    y1 =  input$coef_a * x1 + input$coef_b
+    y1 =  input$coef_b1 * x1 + input$coef_b0
     x2 = 3
-    y2=  input$coef_a * x2 + input$coef_b
+    y2=  input$coef_b1 * x2 + input$coef_b0
     
     # generate the plot
     ggplot(data(), aes(x, y)) +
@@ -38,8 +38,8 @@ server <- function(input, output) {
       coord_cartesian(xlim = c(-3, 3), ylim = c(-3, 3)) +
       geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), colour = SIAP.color, linewidth = 2) +
       labs(x = "X", y = "Y", 
-           title = paste("Scatter Plot with Regression Line: Y =  ",
-                         input$coef_a," *X + ",input$coef_b)) +
+           title = paste("Scatter Plot with Regression Line: Y =  ",input$coef_b0, "+",
+                         input$coef_b1,"X")) +
       if (input$show_regression) {
         geom_smooth(method = "lm", se = TRUE, color = "red") 
       }
